@@ -5,11 +5,11 @@ import java.util.*;
 public class Cliente implements Runnable {
   static PrintStream os = null;
   static boolean paraThread = false;
+  String ip = "107.0.0.1";
 
-  public static void main(String[] args) {
+  public void run () {
     Socket socket = null;
     Scanner is = null;
-    Thread t = new Thread(new Cliente());
 
     try {
       socket = new Socket("127.0.0.1", 80);
@@ -20,8 +20,6 @@ public class Cliente implements Runnable {
     } catch (IOException e) {
       System.err.println("Couldn't get I/O for the connection to host");
     }
-
-    t.start();
 
     try {
       String inputLine;
@@ -52,12 +50,13 @@ public class Cliente implements Runnable {
     }
   }
 
-  public void run() {
+  public void begin (String ip) {
+    this.ip = ip;
+  }
+  
+  public void send(int x, int y, int flag, int id) {
     Scanner tecl = new Scanner(System.in);
-    do {
-      System.out.print("Digite um texto: ");
-      os.println(tecl.nextLine());
-    } while (!paraThread);
+    os.println(x+"_"+y+"_"+flag+"_"+id);
   }
 }
 

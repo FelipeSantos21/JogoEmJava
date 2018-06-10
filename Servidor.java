@@ -45,6 +45,7 @@ class Servindo extends Thread {
   int x;
   int y;
   int flag;
+  int id;
 
   Servindo(Socket clientSocket) {
     this.clientSocket = clientSocket;
@@ -63,11 +64,12 @@ class Servindo extends Thread {
         x = Integer.parseInt(valores[0]);
         y = Integer.parseInt(valores[1]);
         flag = Integer.parseInt(valores[2]);
+        id = Integer.parseInt(valores[3]);
 
         x += 1; y += 2; flag += 3;
         
         retorno = x+"_"+y+"_"+flag;
-        System.out.println("X: "+x+" Y: "+y+"  Flag: "+flag+"    input: "+retorno);
+        System.out.println("X: "+x+" Y: "+y+"  Flag: "+flag+" Id: "+id+"    input: "+retorno);
 
         
         for (int i=0; i<cont; i++) {
