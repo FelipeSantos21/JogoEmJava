@@ -8,6 +8,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.*;
 import javax.swing.*;
+import javax.swing.SwingUtilities;
 import java.io.*;
 import javax.imageio.*;
 
@@ -41,7 +42,20 @@ class Jogo extends JFrame {
                 
                     @Override
                     public void mousePressed(MouseEvent e) {
-                        
+                        switch (e.getButton()) {
+                            case 1: // Left button
+                                System.out.print("Left (<-) ");
+                                break;
+
+                            case 3: // Right button
+                                System.out.print("Right (->) ");
+                                break;
+
+                            default:
+                                System.out.println(e.getButton());
+                                break;
+                        }
+                        //System.out.println(e);
                     }
                 
                     @Override
@@ -69,13 +83,6 @@ class Jogo extends JFrame {
         setVisible(true);
     }
 
-    public ActionListener actionBtn = new ActionListener(){
-    
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            System.out.println(e.getSource());
-        }
-    };
     public Dimension getPreferredSize() {
         return new Dimension(1000, 600); // Tamanho preferido (Tamanho que vai abrir por padrão)
       }
