@@ -12,24 +12,15 @@ import javax.swing.SwingUtilities;
 import java.io.*;
 import javax.imageio.*;
 
-class Casa extends JButton{
-    public int x;
-    public int y;
-
-    Casa  (int x, int y) {
-        this.x = x;
-        this.y = y;
-    }
-}
-
 class Jogo extends JFrame {
     
+    Casa [][] casas;
 
-    Jogo (int x, int y) {
+    Jogo (int x, int y, Cliente cliente) {
         super("Trabalho");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         JPanel tabela = new JPanel(new GridLayout(x,y));
-        Casa [][] casas = new Casa[x][y];
+        casas = new Casa[x][y];
         for (int i = 0; i < x; i++) {
             for (int j = 0; j < y; j++) {
                 Casa btn = new Casa (i, j);
@@ -45,10 +36,12 @@ class Jogo extends JFrame {
                         switch (e.getButton()) {
                             case 1: // Left button
                                 System.out.print("Left (<-) ");
+                                cliente.send(btn.x, btn.y, -2);
                                 break;
 
                             case 3: // Right button
                                 System.out.print("Right (->) ");
+                                cliente.send(btn.x, btn.y, -1);
                                 break;
 
                             default:
@@ -85,9 +78,9 @@ class Jogo extends JFrame {
 
     public Dimension getPreferredSize() {
         return new Dimension(1000, 600); // Tamanho preferido (Tamanho que vai abrir por padrão)
-      }
+    }
 
-    static public void main(String[] args) {
-        Jogo j = new Jogo(20,20);
+    public void receberPosicao (int x, int y, int flag, int id) {
+        casas[x][y].setText(flag+"");
     }
 }
