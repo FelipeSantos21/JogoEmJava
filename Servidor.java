@@ -38,6 +38,8 @@ class Servidor extends Thread{
 
 
 class Servindo extends Thread {
+  
+  int naoUsado = -5;
   Socket clientSocket;
   static PrintStream os[] = new PrintStream[3];
   static int cont=0;
@@ -48,6 +50,7 @@ class Servindo extends Thread {
   int id;  
   Campo campo = new Campo();
   boolean primeiroClick = true;
+  boolean enviarDisponivel = false;
 
   Servindo(Socket clientSocket) {
     this.clientSocket = clientSocket;
@@ -59,9 +62,10 @@ class Servindo extends Thread {
     try {
       Scanner is = new Scanner(clientSocket.getInputStream());
       os[cont++] = new PrintStream(clientSocket.getOutputStream());
-      String inputLine, outputLine, retorno;
+      String inputLine, outputLine;
       
       do {
+        enviarDisponivel = true;
         inputLine = is.nextLine();
         
         valores = inputLine.split("_");
@@ -75,11 +79,10 @@ class Servindo extends Thread {
           primeiroClick = false;
         }
 
-        retorno = x+"_"+y+"_"+pesquisarPorBombas(x, y)+"_"+id;
-        System.out.println("Retorno Servidor ---> "+retorno);
-        enviar(retorno);
+        enviar(x+"_"+y+"_"+pesquisarPorBombas(x, y)+"_"+id);
       } while (!inputLine.equals(""));
 
+      enviarDisponivel = false;
       for (int i=0; i<cont; i++)
         os[i].close();
       is.close();
@@ -94,10 +97,17 @@ class Servindo extends Thread {
 
   void enviar(String msg) {
     // Envia a string para os clientes
+    if (!enviarDisponivel)
+      return;
+
+    
+    //imprimirCampo();
+
     for (int i=0; i<cont; i++) {
       os[i].println(msg);
       os[i].flush();
     }
+    System.out.print(msg+'\n');
   }
 
   
@@ -114,16 +124,16 @@ class Servindo extends Thread {
   */
 
   int[][] mCampo = { 
-    {0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0}    
+    {naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado},
+    {naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado},
+    {naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado},
+    {naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado},
+    {naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado},
+    {naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado},
+    {naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado},
+    {naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado},
+    {naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado},
+    {naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado}
   };
 
   void criarCampo (int x, int y) {
@@ -142,30 +152,60 @@ class Servindo extends Thread {
         mCampo[xb][yb] = -1;
       }
     }
+    imprimirCampo();
   }
   
   int pesquisarPorBombas (int x, int y) {
+    if (x < 0 || x > 9 || y < 0 || y > 9) {
+      return -200;
+    }
+
     /* ordem de busca: casa, topo, topo/direita, direita, baixo/direita, baixo, baixo/esquerda, esquerda, topo/esquerda */
     int numeroCasa = 0;
     System.out.println("\n\n\n########### Pesquisar por bombas ("+x+", "+y+") ###############");
+    if (mCampo[x][y] != naoUsado) {
+      return mCampo[x][y];
+    }
 
-    for (int i = 0; i < 10; i++) {
-      for (int j = 0; j < 10; j++) {
-        if (mCampo[i][j] == -1) {
-          numeroCasa++;
+    for (int i = -1; i < 2; i++) {
+      for (int j = -1; j < 2; j++) {
+        if ( !((x+i < 0) || (x+i >= 10) || (y+j) < 0 || (y+j >= 10)) ){ // Testa se a posição que vai ser checada na matriz é valida.
+          if (mCampo[x+i][y+j] == -1) {
+            numeroCasa++;
+          }
         }
       }
     }
     mCampo[x][y] = numeroCasa;
     
-    System.out.println("mCampo["+x+"]["+y+"] = "+numeroCasa);
+    System.out.print("mCampo["+x+"]["+y+"] = "+numeroCasa+"\n");
     if (numeroCasa == 0) {
-      for (int i = 0; i < 10; i++) {
-        for (int j = 0; j < 10; j++) {
-          enviar(x+"_"+y+"_"+pesquisarPorBombas(i, j)+"_"+"-1");
+      for (int i = -1; i < 2; i++) {
+        
+        for (int j = -1; j < 2; j++) {
+          if ( !((x+i < 0) || (x+i >= 10) || (y+j) < 0 || (y+j >= 10)) ){ // Testa se a posição que vai ser checada na matriz é valida.
+            
+            if (mCampo[x+i][y+j] == naoUsado) {
+              System.out.println("Chamei outro");
+              enviar((x+i)+"_"+(y+j)+"_"+pesquisarPorBombas(x+i, y+j)+"_"+"-1");
+            }
+          }
         }
       }
     }
+
     return numeroCasa;
+  }
+
+  void imprimirCampo () {
+    
+    System.out.print("\n\n");
+    for (int i = 0; i < 10; i++) {
+      for (int j = 0; j < 10; j++) {
+        System.out.print("|"+mCampo[i][j]+"| ");
+      }
+      System.out.print("\n");
+    }
+    System.out.print("\n\n");
   }
 };
