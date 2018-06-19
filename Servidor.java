@@ -100,9 +100,6 @@ class Servindo extends Thread {
     if (!enviarDisponivel)
       return;
 
-    
-    //imprimirCampo();
-
     for (int i=0; i<cont; i++) {
       os[i].println(msg);
       os[i].flush();
