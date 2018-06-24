@@ -19,7 +19,6 @@ class Jogo extends JFrame {
     Jogo (int x, int y, Cliente cliente) {
         super("Trabalho");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setPreferedSize(new Dimension(600, 600));
 
         c = cliente;
 
@@ -70,15 +69,18 @@ class Jogo extends JFrame {
                         
                     }
                 });
-                
+
                 tabela.add(btn);
                 casas[i][j] = btn;
             }
         }
-
         add(tabela);
         pack(); // Chama o public Dimension getPreferredSize() para saber o tamanho preferido
         setVisible(true);
+    }
+
+    public Dimension getPreferredSize() {
+        return new Dimension(1000, 600); // Tamanho preferido (Tamanho que vai abrir por padrão)
     }
 
     public void receberPosicao (int x, int y, int flag, int id) {/*

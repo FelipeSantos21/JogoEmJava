@@ -42,7 +42,7 @@ class Servindo extends Thread {
   int naoUsado = -5;
   Socket clientSocket;
   public static DadosJogo clientes[] = new DadosJogo[3];
-  public static int cont=0;
+  public static int cont=-1;
   String valores[];
   int x;
   int y;
