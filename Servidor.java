@@ -15,9 +15,9 @@ class Servidor extends Thread{
 
     for (int i=0; i<3; i++) {
       Socket clientSocket = null;
-      try {
-        clientSocket = serverSocket.accept();
-      } catch (IOException e) {
+        try {
+          clientSocket = serverSocket.accept();
+        } catch (IOException e) {
         System.out.println("Accept failed: " + 80 + ", " + e);
         System.exit(1);
       }
@@ -41,8 +41,8 @@ class Servindo extends Thread {
   
   int naoUsado = -5;
   Socket clientSocket;
-  static PrintStream os[] = new PrintStream[3];
-  static int cont=0;
+  public static DadosJogo clientes[] = new DadosJogo[3];
+  public static int cont=-1;
   String valores[];
   int x;
   int y;
@@ -57,13 +57,20 @@ class Servindo extends Thread {
   }
 
   public void run() {
-    DadosJogo clientes[] = new DadosJogo[2];
 
     try {
       Scanner is = new Scanner(clientSocket.getInputStream());
-      os[cont++] = new PrintStream(clientSocket.getOutputStream());
+      cont++;
+      clientes[cont] = new DadosJogo(); //(cont, new PrintStream(clientSocket.getOutputStream()));
+      System.out.println("cont: "+cont);
+      clientes[cont].setId(cont);
+      clientes[cont].os = new PrintStream(clientSocket.getOutputStream());
+
       String inputLine, outputLine;
       
+      clientes[cont].os.println(cont); // Envia o id para o novo cliente
+      clientes[cont].os.flush();
+
       do {
         enviarDisponivel = true;
         inputLine = is.nextLine();
@@ -79,12 +86,12 @@ class Servindo extends Thread {
           primeiroClick = false;
         }
 
-        enviar(x+"_"+y+"_"+pesquisarPorBombas(x, y)+"_"+id);
+        pesquisarPorBombas(x, y, id);
       } while (!inputLine.equals(""));
 
       enviarDisponivel = false;
       for (int i=0; i<cont; i++)
-        os[i].close();
+        clientes[i].os.close();
       is.close();
       clientSocket.close();
 
@@ -101,8 +108,8 @@ class Servindo extends Thread {
       return;
 
     for (int i=0; i<cont; i++) {
-      os[i].println(msg);
-      os[i].flush();
+      clientes[i].os.println(msg);
+      clientes[i].os.flush();
     }
     System.out.print(msg+'\n');
   }
@@ -136,7 +143,7 @@ class Servindo extends Thread {
   void criarCampo (int x, int y) {
     int xb, yb;
     System.out.println("\n\n\n########### Criar Campo ("+x+", "+y+") ###############");
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 13; i++) {
       Random r = new Random();
       xb = r.nextInt(10);
       yb = r.nextInt(10);
@@ -152,7 +159,7 @@ class Servindo extends Thread {
     imprimirCampo();
   }
   
-  int pesquisarPorBombas (int x, int y) {
+  int pesquisarPorBombas (int x, int y, int id) {
     if (x < 0 || x > 9 || y < 0 || y > 9) {
       return -200;
     }
@@ -183,14 +190,15 @@ class Servindo extends Thread {
           if ( !((x+i < 0) || (x+i >= 10) || (y+j) < 0 || (y+j >= 10)) ){ // Testa se a posição que vai ser checada na matriz é valida.
             
             if (mCampo[x+i][y+j] == naoUsado) {
-              System.out.println("Chamei outro");
-              enviar((x+i)+"_"+(y+j)+"_"+pesquisarPorBombas(x+i, y+j)+"_"+"-1");
+              pesquisarPorBombas(x+i, y+j, -1);
             }
           }
         }
       }
     }
 
+    enviar(x+"_"+y+"_"+numeroCasa+"_"+id);
+    
     return numeroCasa;
   }
 

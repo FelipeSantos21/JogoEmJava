@@ -10,15 +10,23 @@ public class DadosJogo {
   private int bombasAchadas;
   private int bombasErradas;
   
-  public void DadosJogo () {
-    bombasAchadas = 0;
-    bombasErradas = 0;
-  }
-  
   public void DadosJogo (int id, Scanner is, PrintStream os) {
     this.id = id;
     this.is = is;
     this.os = os;
+    bombasAchadas = 0;
+    bombasErradas = 0;
+  }
+  
+  public void DadosJogo (int id, PrintStream os) {
+    this.id = id;
+    this.is = null;
+    this.os = os;
+    bombasAchadas = 0;
+    bombasErradas = 0;
+  }
+
+  public void DadosJogo () {
     bombasAchadas = 0;
     bombasErradas = 0;
   }

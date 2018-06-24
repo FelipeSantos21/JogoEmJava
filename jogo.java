@@ -13,11 +13,12 @@ import java.io.*;
 import javax.imageio.*;
 
 class Jogo extends JFrame {
-    
+    Cliente c;
     Casa [][] casas;
 
     Jogo (int x, int y, Cliente cliente) {
         super("Trabalho");
+        c = cliente;
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         JPanel tabela = new JPanel(new GridLayout(x,y));
         casas = new Casa[x][y];
@@ -80,7 +81,29 @@ class Jogo extends JFrame {
         return new Dimension(1000, 600); // Tamanho preferido (Tamanho que vai abrir por padrão)
     }
 
-    public void receberPosicao (int x, int y, int flag, int id) {
-        casas[x][y].setText(flag+"");
+    public void receberPosicao (int x, int y, int flag, int id) {/*
+        if (id == c.getMyId()) { // Foi vc q marcou
+            casas[x][y].setForeground(Color.BLACK);
+
+        } else if (id == -1) { // Foi o servidor q marcou
+            casas[x][y].setForeground(Color.GRAY);
+
+        } else { // Foi o oponente q marcou
+            casas[x][y].setForeground(Color.RED);
+        }
+
+        switch (flag) {
+            case -1: // Bomba
+                casas[x][y].setText("\uD83D\uDCA3");
+                break;
+
+            case -2: // Marcação
+                casas[x][y].setText("\u2691");
+                break;
+
+            default: // Todo o resto*/
+                casas[x][y].setText(flag+"");
+                /*break;
+        }*/
     }
 }

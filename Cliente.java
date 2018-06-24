@@ -26,7 +26,6 @@ public class Cliente extends Thread {
       System.err.println("Couldn't get I/O for the connection to host");
     }
     
-    Jogo jogo = new Jogo (10,10, this); // Inicia o jogo e passa a instancia desse cliente para ele.
     
     try {
       String inputLine;
@@ -37,13 +36,21 @@ public class Cliente extends Thread {
       int flag;
       int idRecebido;
 
+      // Recebe os dados iniciais
+      System.out.println(inputLine=me.is.nextLine());
+      this.id = Integer.parseInt(inputLine);
+      System.out.println("This.id == " + this.id);
+
+      Jogo jogo = new Jogo (10,10, this); // Inicia o jogo e passa a instancia desse cliente para ele.
+
+      // Inicio do Jogo, passa a esperar receber os valores e coordenadas das casas
       do {
-        System.out.println(inputLine=me.is.nextLine());
-        valores = inputLine.split("_");
+        System.out.println(inputLine=me.is.nextLine()); // Recebe os dados emitidos pelo servidor
+        valores = inputLine.split("_"); // Divide a string em um array pelo "_"
         x = Integer.parseInt(valores[0]);
         y = Integer.parseInt(valores[1]);
         flag = Integer.parseInt(valores[2]);
-        idRecebido = 0; //Integer.parseInt(valores[3]);
+        idRecebido = Integer.parseInt(valores[3]);
         
         System.out.println("X: "+x+" Y: "+y+"  Flag: "+flag+" ID: "+idRecebido+"    input: "+inputLine);
         jogo.receberPosicao(x, y, flag, idRecebido);
@@ -70,5 +77,9 @@ public class Cliente extends Thread {
     this.id = id;
   }
   public void Cliente () {}
+
+  public int getMyId() {
+    return id;
+  }
 }
 
