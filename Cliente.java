@@ -10,6 +10,9 @@ public class Cliente extends Thread {
   DadosJogo me;
   int tamanho[] = {10, 10}; // x, y
 
+  public void Cliente () {
+  }
+
   public void run () {
     
     Socket socket = null;
@@ -71,15 +74,13 @@ public class Cliente extends Thread {
     Scanner tecl = new Scanner(System.in);
     me.os.println(x+"_"+y+"_"+flag+"_"+id);
   }
-  
-  public void Cliente (String ip, int id) {
-    this.ip = ip;
-    this.id = id;
-  }
-  public void Cliente () {}
 
   public int getMyId() {
     return id;
+  }
+
+  public void setIp (String ip) {
+    this.ip = ip;
   }
 }
 

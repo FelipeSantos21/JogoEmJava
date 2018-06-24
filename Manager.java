@@ -2,13 +2,14 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.*;
 import javax.swing.*;
-import javax.swing.SwingUtilities;
+
 import java.io.*;
 import javax.imageio.*;
 import java.lang.*;
 
 public class Manager {
     JFrame telaInicial;
+    String strIp = "107.0.0.1";
 
     public static void main (String[] args) {
         System.out.println("Iniciado!");
@@ -33,7 +34,7 @@ public class Manager {
         JButton btnSalaAberta = new JButton("Entrar em uma sala criada");
         btnSalaAberta.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
-                //iniciaJogo(false);
+                getIp();
             }
         });
         telaInicial.add(btnSalaAberta, BorderLayout.EAST);
@@ -52,37 +53,74 @@ public class Manager {
              serv.start();
              cli = new Cliente();
 
-        } /* else {
-        	String newIp = JOptionPane.showInputDialog("Entre com o ip da sala EX: 192.168.0.2");;
-        	
-        	 while (!ipIsValid(newIp)) {
-        		newIp = JOptionPane.showInputDialog("Ip invalido!\nEntre com o ip da sala EX: 168.192.0.2");
-        	} 
-            
-            System.out.println("IP: "+newIp);
-            cli = new Cliente(ip, id=1); //newIp);
-        } */
+        }  else { // Entra em uma sala existente.            
+            System.out.println("IP: "+strIp);
+            cli = new Cliente();
+            cli.setIp (strIp);
+        } 
         
         cli.start(); // Inicia com o ip do localhost
         telaInicial.setVisible(false);
     }
-    
-    /*
-    public boolean ipIsValid (String ip) {
-       String[] ipParts = ip.split(".");
 
-       System.out.println("\n\n");
-    	if (partsIp.length != 4) { return false; } // caso n�o tenha os 3 pontos para separar os numeros retorna como errado
-    	
-        for (int i = 0; i < 4; i++) { // Caso uma das casas do ip seja maior que o intervalo [0 , 255] retorna como errado
-            System.out.println(partsIp[i]);
-    		if (partsIp[i] < 0 || partsIp[i] > 255) {
-    			return false;
-    		}
-    	}
-    	
-    	return true;    
-    } */
+    void getIp () {
+        JTextField ip[] = new JTextField[4];
+        JFrame telaIp = new JFrame();
+        telaIp.setTitle("Ip");
+        telaIp.add(new JLabel("Insira o ip da sala!"), BorderLayout.NORTH);
+        
+        JPanel campoIp = new JPanel(new GridLayout(1, 7));
+        ip[0] = new JTextField(3);
+        campoIp.add(ip[0]);
+        campoIp.add(new JLabel("."));
 
-    
+        ip[1] = new JTextField(3);
+        campoIp.add(ip[1]);
+        campoIp.add(new JLabel("."));
+
+        ip[2] = new JTextField(3);
+        campoIp.add(ip[2]);
+        campoIp.add(new JLabel("."));
+
+        ip[3] = new JTextField(3);
+        campoIp.add(ip[3]);
+
+        telaIp.add(campoIp, BorderLayout.CENTER);
+        
+        telaIp.add(campoIp, BorderLayout.CENTER);
+        
+        JButton btnEntrar = new JButton("Entrar");
+        btnEntrar.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                boolean valido = true;
+                for (int i = 0; i < 4; i++) {
+                    
+                    int numIp;  
+                    try {
+                        numIp = Integer.parseInt(ip[i].getText());
+                        if (0 <= numIp && numIp > 255) {
+                            ip[i].setText("");
+                            valido = false;
+                        }
+                    }
+                    catch (NumberFormatException ex){
+                        ip[i].setText("");
+                        valido = false;
+                    }
+                }
+                
+                if (valido) {
+                    strIp = ip[0].getText()+"."+ip[1].getText()+"."+ip[2].getText()+"."+ip[3].getText();
+                    telaInicial.setVisible(true);
+                    iniciaJogo(false);
+                } else {
+                    JOptionPane.showMessageDialog(null, "O ip não é válido!");
+                }
+            }
+        });
+
+        telaIp.add(btnEntrar, BorderLayout.EAST);
+        telaIp.pack();
+        telaIp.setVisible(true);
+    }
 }
