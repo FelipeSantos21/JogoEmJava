@@ -70,19 +70,19 @@ public class Manager {
         telaIp.add(new JLabel("Insira o ip da sala!"), BorderLayout.NORTH);
         
         JPanel campoIp = new JPanel(new GridLayout(1, 7));
-        ip[0] = new JTextField(3);
+        ip[0] = new JTextField("107", 3);
         campoIp.add(ip[0]);
         campoIp.add(new JLabel("."));
 
-        ip[1] = new JTextField(3);
+        ip[1] = new JTextField("0", 3);
         campoIp.add(ip[1]);
         campoIp.add(new JLabel("."));
 
-        ip[2] = new JTextField(3);
+        ip[2] = new JTextField("0", 3);
         campoIp.add(ip[2]);
         campoIp.add(new JLabel("."));
 
-        ip[3] = new JTextField(3);
+        ip[3] = new JTextField("1", 3);
         campoIp.add(ip[3]);
 
         telaIp.add(campoIp, BorderLayout.CENTER);
@@ -111,7 +111,7 @@ public class Manager {
                 
                 if (valido) {
                     strIp = ip[0].getText()+"."+ip[1].getText()+"."+ip[2].getText()+"."+ip[3].getText();
-                    telaInicial.setVisible(true);
+                    telaIp.setVisible(false);
                     iniciaJogo(false);
                 } else {
                     JOptionPane.showMessageDialog(null, "O ip não é válido!");

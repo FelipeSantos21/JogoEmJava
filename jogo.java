@@ -75,15 +75,16 @@ class Jogo extends JFrame {
             }
         }
         add(tabela);
-        pack(); // Chama o public Dimension getPreferredSize() para saber o tamanho preferido
+        setSize(500, 500);
+        //pack(); // Chama o public Dimension getPreferredSize() para saber o tamanho preferido
         setVisible(true);
     }
 
-    public Dimension getPreferredSize() {
+    /*public Dimension getPreferredSize() {
         return new Dimension(1000, 600); // Tamanho preferido (Tamanho que vai abrir por padrão)
-    }
+    }*/
 
-    public void receberPosicao (int x, int y, int flag, int id) {/*
+    public void receberPosicao (int x, int y, int flag, int id) {
         if (id == c.getMyId()) { // Foi vc q marcou
             casas[x][y].setForeground(Color.BLACK);
 
@@ -103,9 +104,9 @@ class Jogo extends JFrame {
                 casas[x][y].setText("\u2691");
                 break;
 
-            default: // Todo o resto*/
+            default: // Todo o resto
                 casas[x][y].setText(flag+"");
-                /*break;
-        }*/
+                break;
+        }
     }
 }

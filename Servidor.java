@@ -85,8 +85,12 @@ class Servindo extends Thread {
           criarCampo(x, y);
           primeiroClick = false;
         }
+        if (flag == -1) { // Caso seja para abrir a casa
+          pesquisarPorBombas(x, y, id);
 
-        pesquisarPorBombas(x, y, id);
+        } else if (flag == -2 && !primeiroClick) {
+          marcarFlag(x, y, id);
+        }
       } while (!inputLine.equals(""));
 
       enviarDisponivel = false;
@@ -107,7 +111,7 @@ class Servindo extends Thread {
     if (!enviarDisponivel)
       return;
 
-    for (int i=0; i<cont; i++) {
+    for (int i=0; i<=cont; i++) {
       clientes[i].os.println(msg);
       clientes[i].os.flush();
     }
@@ -163,11 +167,15 @@ class Servindo extends Thread {
     if (x < 0 || x > 9 || y < 0 || y > 9) {
       return -200;
     }
-
     /* ordem de busca: casa, topo, topo/direita, direita, baixo/direita, baixo, baixo/esquerda, esquerda, topo/esquerda */
+
     int numeroCasa = 0;
     System.out.println("\n\n\n########### Pesquisar por bombas ("+x+", "+y+") ###############");
     if (mCampo[x][y] != naoUsado) {
+      if (mCampo[x][y] == -1) {
+        enviar(x+"_"+y+"_"+-1+"_"+id);
+        fimJogo(id);
+      }
       return mCampo[x][y];
     }
 
@@ -181,7 +189,8 @@ class Servindo extends Thread {
       }
     }
     mCampo[x][y] = numeroCasa;
-    
+    enviar(x+"_"+y+"_"+numeroCasa+"_"+id);
+
     System.out.print("mCampo["+x+"]["+y+"] = "+numeroCasa+"\n");
     if (numeroCasa == 0) {
       for (int i = -1; i < 2; i++) {
@@ -196,10 +205,19 @@ class Servindo extends Thread {
         }
       }
     }
-
-    enviar(x+"_"+y+"_"+numeroCasa+"_"+id);
-    
     return numeroCasa;
+  }
+
+  int marcarFlag (int x, int y, int id) {
+    if (-1 < id && id >= cont) {
+      enviar(x+"_"+y+"_-2_"+id);
+      
+      if (mCampo[x][y] == -1) {
+        clientes[id].incrementBombasAchadas();
+      } else {
+        clientes[id].incrementBombasErradas();
+      }
+    }
   }
 
   void imprimirCampo () {
@@ -212,5 +230,9 @@ class Servindo extends Thread {
       System.out.print("\n");
     }
     System.out.print("\n\n");
+  }
+
+  fimJogo() {
+    
   }
 };
