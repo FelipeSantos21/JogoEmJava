@@ -13,7 +13,7 @@ class Servidor extends Thread{
       System.exit(1);
     }
 
-    for (int i=0; i<3; i++) {
+    for (int i=0; i<2; i++) {
       Socket clientSocket = null;
         try {
           clientSocket = serverSocket.accept();
@@ -39,10 +39,11 @@ class Servidor extends Thread{
 
 class Servindo extends Thread {
   
-  int naoUsado = -5;
+  final int naoUsado = -5;
   Socket clientSocket;
-  public static DadosJogo clientes[] = new DadosJogo[3];
+  public static DadosJogo clientes[] = new DadosJogo[2];
   public static int cont=-1;
+  public static boolean enviarDisponivel = false;
   String valores[];
   int x;
   int y;
@@ -50,47 +51,59 @@ class Servindo extends Thread {
   int id;  
   Campo campo = new Campo();
   boolean primeiroClick = true;
-  boolean enviarDisponivel = false;
+
+  int tempo = 0;
+  final int tempoMax = 10000; // Em milisegundos
+  final int tempoPasso = 500; // Em milisegundos
+  Timer timer;
 
   Servindo(Socket clientSocket) {
     this.clientSocket = clientSocket;
   }
 
+  class tempoJogo extends TimerTask { // Classe para incrementar o timer
+    public void run() {
+        tempo = tempo + tempoPasso;
+
+        if (tempo > tempoMax) {
+          timer.cancel(); //Finalizar essa thread
+          fimJogo(0, false);
+          return;
+        }
+
+        enviar("T:"+tempo+"_"+(tempo*100/tempoMax));
+    }
+}
   public void run() {
 
     try {
       Scanner is = new Scanner(clientSocket.getInputStream());
-      cont++;
-      clientes[cont] = new DadosJogo(); //(cont, new PrintStream(clientSocket.getOutputStream()));
-      System.out.println("cont: "+cont);
-      clientes[cont].setId(cont);
-      clientes[cont].os = new PrintStream(clientSocket.getOutputStream());
+
+      if (cont++ > 1) {
+        cont--;
+      } else {
+        clientes[cont] = new DadosJogo(); //(cont, new PrintStream(clientSocket.getOutputStream()));
+        System.out.println("cont: "+cont);
+        clientes[cont].setId(cont);
+        clientes[cont].os = new PrintStream(clientSocket.getOutputStream());
+      
+        clientes[cont].os.println(cont); // Envia o id para o novo cliente
+        clientes[cont].os.flush();
+        if (cont == 1) {
+          enviar("I"); // Envia o comando para iniciar o jogo.
+          System.out.println("Server -> Iniciar Jogo");
+          timer = new Timer();
+          timer.schedule(new tempoJogo(), tempoPasso);
+        }
+      }
 
       String inputLine, outputLine;
-      
-      clientes[cont].os.println(cont); // Envia o id para o novo cliente
-      clientes[cont].os.flush();
 
       do {
         enviarDisponivel = true;
         inputLine = is.nextLine();
         
-        valores = inputLine.split("_");
-        x = Integer.parseInt(valores[0]);
-        y = Integer.parseInt(valores[1]);
-        flag = Integer.parseInt(valores[2]);
-        id = Integer.parseInt(valores[3]);
-        
-        if (primeiroClick) {
-          criarCampo(x, y);
-          primeiroClick = false;
-        }
-        if (flag == -1) { // Caso seja para abrir a casa
-          pesquisarPorBombas(x, y, id);
-
-        } else if (flag == -2 && !primeiroClick) {
-          marcarFlag(x, y, id);
-        }
+        p(inputLine);
       } while (!inputLine.equals(""));
 
       enviarDisponivel = false;
@@ -106,8 +119,27 @@ class Servindo extends Thread {
     }
   }
 
+  void p (String msg) { // Função chamada para passar a posição da jogada, Representada pelo caractere 'P'
+    valores = msg.split("_");
+    x = Integer.parseInt(valores[0]);
+    y = Integer.parseInt(valores[1]);
+    flag = Integer.parseInt(valores[2]);
+    id = Integer.parseInt(valores[3]);
+    
+    if (primeiroClick) {
+      criarCampo(x, y);
+      primeiroClick = false;
+    }
+    if (flag == -1) { // Caso seja para abrir a casa
+      pesquisarPorBombas(x, y, id);
+
+    } else if (flag == -2 && !primeiroClick) {
+      marcarFlag(x, y, id);
+    }
+  }
+
   void enviar(String msg) {
-    // Envia a string para os clientes
+    // Envia a String para os clientes
     if (!enviarDisponivel)
       return;
 
@@ -121,8 +153,8 @@ class Servindo extends Thread {
   
   /*
    * Flag - Recebido do Cliente:
-   -1 - marcar
-   -2 - descobrir
+   -1 - descobrir
+   -2 - marcar
    
    * Flag - Retorno para o Cliente:
    -2 - marcado
@@ -172,9 +204,9 @@ class Servindo extends Thread {
     int numeroCasa = 0;
     System.out.println("\n\n\n########### Pesquisar por bombas ("+x+", "+y+") ###############");
     if (mCampo[x][y] != naoUsado) {
-      if (mCampo[x][y] == -1) {
-        enviar(x+"_"+y+"_"+-1+"_"+id);
-        fimJogo(id);
+      if (mCampo[x][y] == -1 && id != -1) {
+        enviar("P:"+x+"_"+y+"_"+-1+"_"+id);
+        fimJogo(id, true);
       }
       return mCampo[x][y];
     }
@@ -189,7 +221,7 @@ class Servindo extends Thread {
       }
     }
     mCampo[x][y] = numeroCasa;
-    enviar(x+"_"+y+"_"+numeroCasa+"_"+id);
+    enviar("P:"+x+"_"+y+"_"+numeroCasa+"_"+id);
 
     System.out.print("mCampo["+x+"]["+y+"] = "+numeroCasa+"\n");
     if (numeroCasa == 0) {
@@ -208,9 +240,11 @@ class Servindo extends Thread {
     return numeroCasa;
   }
 
-  int marcarFlag (int x, int y, int id) {
-    if (-1 < id && id >= cont) {
-      enviar(x+"_"+y+"_-2_"+id);
+  void marcarFlag (int x, int y, int id) {
+    System.out.println("Marcar Flag -> ID: "+id);
+    if (-1 < id && id <= cont) {
+      System.out.println("\tPassou pelo if");
+      enviar("P:"+x+"_"+y+"_-2_"+id);
       
       if (mCampo[x][y] == -1) {
         clientes[id].incrementBombasAchadas();
@@ -232,7 +266,34 @@ class Servindo extends Thread {
     System.out.print("\n\n");
   }
 
-  fimJogo() {
-    
+  void fimJogo(int id, boolean bomba) {
+    if (!bomba) { // Caso tenha acabado por tempo ou por ter acabado o campo
+      if (clientes[0].getBombasAchadas() == clientes[1].getBombasAchadas()) { // Caso a primeira concição dê empate
+        if  (clientes[0].getBombasErradas() == clientes[1].getBombasErradas()) { // Caso a segunda concição dê empate
+          enviar ("D:"+clientes[0].getBombasAchadas()+"_" + clientes[0].getBombasErradas());
+          return;
+
+        } else { // Caso a segunda condição consiga desempatar
+          if (clientes[0].getBombasErradas() > clientes[1].getBombasErradas()) {  // Caso o primeiro jogador seja o vencedor
+            id = 1;
+          } else {  // Caso o segundo jogador seja o vencedor
+            id = 0;
+          }
+        }
+
+      } else { // Caso a primeira condição seja o suficiente para decidir o ganhador
+        if (clientes[0].getBombasAchadas() > clientes[1].getBombasAchadas()) {
+          id = 1;
+        } else {
+          id = 0;
+        }
+      }
+    }  
+
+    if (id == 1) { // o id representa o perdedor
+      enviar ("F:"+0+"_" + clientes[0].getBombasAchadas()+"_" + clientes[0].getBombasErradas()+"_"+ clientes[1].getBombasAchadas()+"_" + clientes[1].getBombasErradas());
+    } else {
+      enviar ("F:"+1+"_" + clientes[1].getBombasAchadas()+"_" + clientes[1].getBombasErradas()+"_"+ clientes[0].getBombasAchadas()+"_" + clientes[0].getBombasErradas());
+    }
   }
 };

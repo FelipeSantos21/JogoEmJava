@@ -8,7 +8,9 @@ public class Cliente extends Thread {
   String ip = "107.0.0.1";
   int id = 0;
   DadosJogo me;
-  int tamanho[] = {10, 10}; // x, y
+  int tamanho[] = {10, 10}; // x, 
+  String valores[];
+  Jogo jogo;
 
   public void Cliente () {
   }
@@ -32,31 +34,43 @@ public class Cliente extends Thread {
     
     try {
       String inputLine;
-      String valores[];
       String retorno;
-      int x;
-      int y;
-      int flag;
-      int idRecebido;
 
       // Recebe os dados iniciais
       System.out.println(inputLine=me.is.nextLine());
       this.id = Integer.parseInt(inputLine);
       System.out.println("This.id == " + this.id);
 
-      Jogo jogo = new Jogo (10,10, this); // Inicia o jogo e passa a instancia desse cliente para ele.
+      jogo = new Jogo (10,10, this); // Inicia o jogo e passa a instancia desse cliente para ele.
 
+      do { // Espera pelo inicio do jogo.
+        System.out.println(inputLine=me.is.nextLine());
+      } while (!inputLine.equals("I"));
+      System.out.println("Client -> Inicia Jogo");
+      jogo.inicia(true);
+      
       // Inicio do Jogo, passa a esperar receber os valores e coordenadas das casas
       do {
-        System.out.println(inputLine=me.is.nextLine()); // Recebe os dados emitidos pelo servidor
-        valores = inputLine.split("_"); // Divide a string em um array pelo "_"
-        x = Integer.parseInt(valores[0]);
-        y = Integer.parseInt(valores[1]);
-        flag = Integer.parseInt(valores[2]);
-        idRecebido = Integer.parseInt(valores[3]);
-        
-        System.out.println("X: "+x+" Y: "+y+"  Flag: "+flag+" ID: "+idRecebido+"    input: "+inputLine);
-        jogo.receberPosicao(x, y, flag, idRecebido);
+        System.out.println("Client::  "+ (inputLine=me.is.nextLine())); // Recebe os dados emitidos pelo servidor
+        valores = inputLine.split(":");
+
+        switch (valores[0]) {
+          case "T": // Atualizar o timer
+            t(valores[1]);
+            break;
+            
+          case "P": // Mostrar posição
+            p(valores[1]);
+            break;
+            
+          case "D": // Jogo finalizado com empate
+            d(valores[1]);
+            break;
+            
+          case "F": // Jogo finalizado
+            f(valores[1]);
+            break;            
+        }
       } while (!inputLine.equals (""));
 
       paraThread = true;
@@ -69,9 +83,54 @@ public class Cliente extends Thread {
       System.err.println("IOException:  " + e);
     }
   }
-  
+
+  // Função para atualizar o timer do jogo
+  void t (String msg) {
+    /*  
+      0 - Tempo
+      1 - % Tempo
+    */
+    valores = msg.split("_"); // Divide a String em um array pelo "_"
+    
+    jogo.setTime(Integer.parseInt(valores[0]), Integer.parseInt(valores[1]));
+  }
+
+  // Função para mandar uma marcação da casa para o jogo
+  void p (String msg) {
+    /*
+      0 - x
+      1 - y
+      2 - flag
+      3 - id de quem pediu a casa
+    */
+    valores = msg.split("_"); // Divide a String em um array pelo "_"
+    jogo.receberPosicao(Integer.parseInt(valores[0]), Integer.parseInt(valores[1]), Integer.parseInt(valores[2]), Integer.parseInt(valores[3]));
+  }
+
+  // Função para enviar um fim de jogo com empate para o jogo
+  void d (String msg) {
+    /*
+      0 - Bombas Marcadas
+      1 - Bombas Erradas
+    */
+    valores = msg.split("_"); // Divide a String em um array pelo "_"
+    jogo.empate(Integer.parseInt(valores[0]), Integer.parseInt(valores[1]));
+  }
+
+  // Função para mandar o fim de jogo para o jogo
+  void f (String msg) {
+    /* 
+      0 - idVencedor
+      1 - Bombas Achadas Vencedor
+      2 - Bombas Erradas Vencedor
+      3 - Bombas Achadas Perdedor
+      4 - Bombas Erradas Perdedor
+    */
+    valores = msg.split("_");
+    jogo.fimJogo ((Integer.parseInt(valores[0]) == id), Integer.parseInt(valores[1]), Integer.parseInt(valores[2]), Integer.parseInt(valores[3]), Integer.parseInt(valores[4]));
+  }
+
   public void send(int x, int y, int flag) {
-    Scanner tecl = new Scanner(System.in);
     me.os.println(x+"_"+y+"_"+flag+"_"+id);
   }
 

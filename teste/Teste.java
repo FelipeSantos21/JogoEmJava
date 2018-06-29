@@ -1,8 +1,8 @@
 
 public class Teste {
     public static void main (String[] args ) {
-        int c = 55357;
-        String teste = Character.toString((char)c);
-        System.out.print("teste:\uD83D\uDCA3");
+        boolean teste = true;
+        String teste2 = teste+"";
+        System.out.print(teste2 + " --> " + teste2.equals("true"));
     }
 }
