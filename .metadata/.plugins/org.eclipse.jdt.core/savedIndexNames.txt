@@ -1,1 +1,0 @@
-INDEX VERSION 1.130+C:\Users\felip\OneDrive\Dados\Desktop\Java\JogoEmJava\.metadata\.plugins\org.eclipse.jdt.core

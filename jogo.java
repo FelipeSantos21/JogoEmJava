@@ -20,7 +20,7 @@ class Jogo extends JFrame {
     int x;
     int y;
 
-    Jogo (int x, int y, Cliente cliente) {
+    Jogo (int x, int y, Cliente cliente, Manager manager) {
         super("Trabalho");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
@@ -106,6 +106,8 @@ class Jogo extends JFrame {
     }*/
 
     public void receberPosicao (int x, int y, int flag, int id) {
+        casas[x][y].setMyEnable(false); // Impede que o jogador mande algum comando via clique para o botão
+
         if (id == c.getMyId()) { // Foi vc q marcou
             casas[x][y].setForeground(Color.BLACK);
 
@@ -124,6 +126,11 @@ class Jogo extends JFrame {
             case -2: // Marcação
                 casas[x][y].setText("\u2691");
                 break;
+
+            case -5: // Caso a casa esteja como não usada no servidor
+                casas[x][y].setText("");
+                break;
+
 
             default: // Todo o resto
                 casas[x][y].setText(flag+"");

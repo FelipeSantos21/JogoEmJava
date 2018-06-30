@@ -51,11 +51,11 @@ public class Manager {
         if (novaSala) {
              serv = new Servidor();
              serv.start();
-             cli = new Cliente();
+             cli = new Cliente(this);
 
         }  else { // Entra em uma sala existente.            
             System.out.println("IP: "+strIp);
-            cli = new Cliente();
+            cli = new Cliente(this);
             cli.setIp (strIp);
         } 
         
@@ -69,23 +69,28 @@ public class Manager {
         telaIp.setTitle("Ip");
         telaIp.add(new JLabel("Insira o ip da sala!"), BorderLayout.NORTH);
         
-        JPanel campoIp = new JPanel(new GridLayout(1, 7));
+        JPanel campoIp = new JPanel(new GridLayout(1, 4));
+
+        JPanel campo = new JPanel(new BorderLayout());
         ip[0] = new JTextField("107", 3);
-        campoIp.add(ip[0]);
-        campoIp.add(new JLabel("."));
+        campo.add(ip[0], BorderLayout.CENTER);
+        campo.add(new JLabel("."), BorderLayout.EAST);
+        campoIp.add(campo);
 
+        campo = new JPanel(new BorderLayout());
         ip[1] = new JTextField("0", 3);
-        campoIp.add(ip[1]);
-        campoIp.add(new JLabel("."));
+        campo.add(ip[1], BorderLayout.CENTER);
+        campo.add(new JLabel("."), BorderLayout.EAST);
+        campoIp.add(campo);
 
+        campo = new JPanel(new BorderLayout());
         ip[2] = new JTextField("0", 3);
-        campoIp.add(ip[2]);
-        campoIp.add(new JLabel("."));
+        campo.add(ip[2], BorderLayout.CENTER);
+        campo.add(new JLabel("."), BorderLayout.EAST);
+        campoIp.add(campo);
 
         ip[3] = new JTextField("1", 3);
         campoIp.add(ip[3]);
-
-        telaIp.add(campoIp, BorderLayout.CENTER);
         
         telaIp.add(campoIp, BorderLayout.CENTER);
         
@@ -122,5 +127,9 @@ public class Manager {
         telaIp.add(btnEntrar, BorderLayout.EAST);
         telaIp.pack();
         telaIp.setVisible(true);
+    }
+
+    public void exit () {
+        System.exit(1);
     }
 }

@@ -11,8 +11,10 @@ public class Cliente extends Thread {
   int tamanho[] = {10, 10}; // x, 
   String valores[];
   Jogo jogo;
+  Manager manager;
 
-  public void Cliente () {
+  Cliente (Manager manager) {
+    this.manager = manager;
   }
 
   public void run () {
@@ -27,8 +29,10 @@ public class Cliente extends Thread {
       me.is = new Scanner(me.socket.getInputStream());
     } catch (UnknownHostException e) {
       System.err.println("Don't know about host.");
+      manager.exit();
     } catch (IOException e) {
       System.err.println("Couldn't get I/O for the connection to host");
+      manager.exit();
     }
     
     
@@ -41,7 +45,7 @@ public class Cliente extends Thread {
       this.id = Integer.parseInt(inputLine);
       System.out.println("This.id == " + this.id);
 
-      jogo = new Jogo (10,10, this); // Inicia o jogo e passa a instancia desse cliente para ele.
+      jogo = new Jogo (10,10, this, manager); // Inicia o jogo e passa a instancia desse cliente para ele.
 
       do { // Espera pelo inicio do jogo.
         System.out.println(inputLine=me.is.nextLine());
@@ -69,7 +73,11 @@ public class Cliente extends Thread {
             
           case "F": // Jogo finalizado
             f(valores[1]);
-            break;            
+            break;  
+            
+          default:
+            System.out.println("Comando nao reconhecido: "+inputLine);
+            break;
         }
       } while (!inputLine.equals (""));
 
@@ -131,7 +139,7 @@ public class Cliente extends Thread {
   }
 
   public void send(int x, int y, int flag) {
-    me.os.println(x+"_"+y+"_"+flag+"_"+id);
+    me.os.println("P:"+x+"_"+y+"_"+flag+"_"+id);
   }
 
   public int getMyId() {

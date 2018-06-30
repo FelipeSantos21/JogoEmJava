@@ -2,6 +2,8 @@ import java.net.*;
 import java.io.*;
 import java.util.*;
 
+import javax.swing.JOptionPane;
+
 class Servidor extends Thread{
   public void run () {
     ServerSocket serverSocket=null;
@@ -10,6 +12,7 @@ class Servidor extends Thread{
       serverSocket = new ServerSocket(80);
     } catch (IOException e) {
       System.out.println("Could not listen on port: " + 80 + ", " + e);
+      JOptionPane.showMessageDialog(null, "Não foi possivel abrir a sala!\nDeve ter uma sala sala aberta nesse computador\n IP: 107.0.0.1");
       System.exit(1);
     }
 
@@ -66,14 +69,14 @@ class Servindo extends Thread {
         tempo = tempo + tempoPasso;
 
         if (tempo > tempoMax) {
-          timer.cancel(); //Finalizar essa thread
           fimJogo(0, false);
           return;
         }
 
         enviar("T:"+((tempoMax - tempo)/1000)+"_"+(tempo*100/tempoMax));
     }
-}
+  }
+
   public void run() {
 
     try {
@@ -102,8 +105,15 @@ class Servindo extends Thread {
       do {
         enviarDisponivel = true;
         inputLine = is.nextLine();
-        
-        p(inputLine);
+        switch (inputLine.split(":")[0]) {
+          case "P":
+            p(inputLine.split(":")[1]);
+            break;
+            
+          default:
+            System.out.println("Server recebeu comando nao estendido: "+inputLine);
+            break;
+        }
       } while (!inputLine.equals(""));
 
       enviarDisponivel = false;
@@ -119,7 +129,7 @@ class Servindo extends Thread {
     }
   }
 
-  void p (String msg) { // Função chamada para passar a posição da jogada, Representada pelo caractere 'P'
+  void p (String msg) { // Função chamada para passar a posição da jogada, que ao enviar é representada pelo caractere 'P'
     valores = msg.split("_");
     x = Integer.parseInt(valores[0]);
     y = Integer.parseInt(valores[1]);
@@ -178,6 +188,7 @@ class Servindo extends Thread {
     for (int i = 0; i < 10; i++) {
       for (int j = 0; j < 10; j++) {
         mCampo[i][j] = new Campo(naoUsado, false); 
+        enviar("P:"+x+"_"+y+"_-5_-1");
       }
     }
 
@@ -196,7 +207,7 @@ class Servindo extends Thread {
         mCampo[xb][yb].setValor(-1);
       }
     }
-    imprimirCampo();
+    imprimirCampo(false);
   }
   
   int pesquisarPorBombas (int x, int y, int id) {
@@ -211,16 +222,23 @@ class Servindo extends Thread {
       return mCampo[x][y].getValor();
     }
 
-    if (mCampo[x][y].getValor() == -1 && id != -1) { // Caso um dos jogadores tenha abrido uma bomba
-      enviar("P:"+x+"_"+y+"_"+-1+"_"+id);
-      fimJogo(id, true);
+    if (mCampo[x][y].getValor() == -1) { // Caso tenha abrido uma bomba
+      if (id == -1) { // Caso o servidor tenha chamado
+        enviar("P:"+x+"_"+y+"_-1_-1");
+        return -1;
+
+      } else { // Caso um dos jogadores tenha chamado
+        enviar("P:"+x+"_"+y+"_"+-1+"_"+id);
+        fimJogo(id, true);
+        return -1;
+      }
     }
 
       // Ia colocar alguma coisa aqui só não lembro o que e se o bloco de cima já resolve o problema...
 
     for (int i = -1; i < 2; i++) { // Calcula o numero da casa (quantidade de bombas perimetro de uma casa a partir dela)
       for (int j = -1; j < 2; j++) {
-        if ( !((x+i < 0) || (x+i >= 10) || (y+j) < 0 || (y+j >= 10)) ){ // Testa se a posição que vai ser checada na matriz é valida.
+        if ( !((x+i < 0) || (x+i >= 10) || (y+j) < 0 || (y+j >= 10) || (i==0 && j==0))){ // Testa se a posição que vai ser checada na matriz é valida.
           if (mCampo[x+i][y+j].getValor() == -1) { // Testa se é uma bomba para incrementar no contador numeroCasa
             numeroCasa++;
           }
@@ -236,9 +254,9 @@ class Servindo extends Thread {
       for (int i = -1; i < 2; i++) {
         
         for (int j = -1; j < 2; j++) {
-          if ( !((x+i < 0) || (x+i >= 10) || (y+j) < 0 || (y+j >= 10)) ){ // Testa se a posição que vai ser checada na matriz é valida.
+          if ( !((x+i < 0) || (x+i >= 10) || (y+j) < 0 || (y+j >= 10) || (i==0 && j==0)) ){ // Testa se a posição que vai ser checada na matriz é valida.
             
-            if (mCampo[x+i][y+j].getValor() == naoUsado && mCampo[x+i][y+j].getMarcadoPor() == -1) {
+            if (mCampo[x+i][y+j].getValor() == naoUsado){//} && mCampo[x+i][y+j].getMarcadoPor() == -1) {
               pesquisarPorBombas(x+i, y+j, -1);
             }
           }
@@ -272,12 +290,15 @@ class Servindo extends Thread {
     checarSeMCampoEstaCheio();
   }
 
-  void imprimirCampo () {
+  void imprimirCampo (boolean enviar) {
     
     System.out.print("\n\n");
     for (int i = 0; i < 10; i++) {
       for (int j = 0; j < 10; j++) {
-        System.out.print("|"+mCampo[i][j]+"| ");
+        System.out.print("|"+mCampo[i][j].getValor()+"| ");
+        if (enviar) {
+          enviar("P:"+i+"_"+j+"_"+mCampo[i][j].getValor()+"_"+id);
+        }
       }
       System.out.print("\n");
     }
@@ -289,7 +310,7 @@ class Servindo extends Thread {
 
     for (int i = 0; i < 10; i++) {
       for (int j = 0; j < 10; j++) {
-        if (mCampo[i][j].getExibido()) {
+        if (mCampo[i][j].getExibido() || mCampo[i][j].getMarcadoPor() != -1) {
           usados++;
         }
       }
@@ -301,6 +322,8 @@ class Servindo extends Thread {
   }
 
   void fimJogo(int id, boolean bomba) {
+    timer.cancel(); //Finalizar a thread do timer
+    imprimirCampo(true);
     if (!bomba) { // Caso tenha acabado por tempo ou por ter acabado o campo
       if (clientes[0].getBombasAchadas() == clientes[1].getBombasAchadas()) { // Caso a primeira concição dê empate
         if  (clientes[0].getBombasErradas() == clientes[1].getBombasErradas()) { // Caso a segunda concição dê empate
