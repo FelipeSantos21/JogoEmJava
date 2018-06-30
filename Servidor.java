@@ -53,7 +53,7 @@ class Servindo extends Thread {
   boolean primeiroClick = true;
 
   int tempo = 0;
-  final int tempoMax = 10000; // Em milisegundos
+  final int tempoMax = 600000; // Em milisegundos
   final int tempoPasso = 500; // Em milisegundos
   Timer timer;
 
@@ -71,7 +71,7 @@ class Servindo extends Thread {
           return;
         }
 
-        enviar("T:"+tempo+"_"+(tempo*100/tempoMax));
+        enviar("T:"+((tempoMax - tempo)/1000)+"_"+(tempo*100/tempoMax));
     }
 }
   public void run() {
@@ -177,6 +177,16 @@ class Servindo extends Thread {
   };
 
   void criarCampo (int x, int y) {
+    boolean campoMarcado = false;
+
+    for (int i = 0; i < 10; i++) {
+      for (int j = 0; j < 10; j++) {
+        if (mCampo[i][j] != naoUsado) {
+          System.out.println("O Criar Campo foi chamado com o campo em uso!");
+          return;
+        }
+      }
+    }
     int xb, yb;
     System.out.println("\n\n\n########### Criar Campo ("+x+", "+y+") ###############");
     for (int i = 0; i < 13; i++) {

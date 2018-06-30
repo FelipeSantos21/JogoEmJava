@@ -32,7 +32,7 @@ class Jogo extends JFrame {
         tempoN = new JLabel();
 
         JPanel painelTempo = new JPanel (new BorderLayout());
-        tempoN.setText("Tempo: 0");
+        tempoN.setText("Tempo: 0 segundos ");
         tempoP.setValue(0);
         tempoP.setStringPainted(true);
 
@@ -144,7 +144,7 @@ class Jogo extends JFrame {
     public void setTime(int tempo, int porcentagem) {
         // Ambos em milisegundos
         
-        tempoN.setText("Tempo: "+tempo);
+        tempoN.setText("Tempo: "+tempo+" segundos ");
         tempoP.setValue(porcentagem);
     }
 
