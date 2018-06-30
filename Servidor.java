@@ -92,8 +92,8 @@ class Servindo extends Thread {
         if (cont == 1) {
           enviar("I"); // Envia o comando para iniciar o jogo.
           System.out.println("Server -> Iniciar Jogo");
-          timer = new Timer();
-          timer.schedule(new tempoJogo(), tempoPasso);
+          timer = new Timer(true);
+          timer.schedule(new tempoJogo(), tempoPasso, tempoPasso); // Para executar mais de uma vez
         }
       }
 
@@ -243,7 +243,6 @@ class Servindo extends Thread {
   void marcarFlag (int x, int y, int id) {
     System.out.println("Marcar Flag -> ID: "+id);
     if (-1 < id && id <= cont) {
-      System.out.println("\tPassou pelo if");
       enviar("P:"+x+"_"+y+"_-2_"+id);
       
       if (mCampo[x][y] == -1) {

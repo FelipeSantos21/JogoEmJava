@@ -72,7 +72,6 @@ class Jogo extends JFrame {
                                     break;
                             }
                         }
-                        //System.out.println(e);
                     }
                 
                     @Override
@@ -150,6 +149,7 @@ class Jogo extends JFrame {
     }
 
     public void empate (int bombasAchadas, int bombasErradas) {
+        inicia(false);
         JFrame fimDeJogo = new JFrame("Resultado");
         fimDeJogo.setLayout(new BorderLayout());
         fimDeJogo.setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -167,6 +167,7 @@ class Jogo extends JFrame {
     }
 
     public void fimJogo (boolean vcVenceu, int bombasAchadasVencedor, int bombasErradasVencedor, int bombasAchadasPerdedor, int bombasErradasPerdedor) {
+        inicia(false);
         JFrame fimDeJogo = new JFrame("Resultado");
         fimDeJogo.setLayout(new BorderLayout());
         fimDeJogo.setDefaultCloseOperation(EXIT_ON_CLOSE);
