@@ -49,7 +49,7 @@ class Servindo extends Thread {
   int y;
   int flag;
   int id;  
-  Campo campo = new Campo();
+  //Campo campo = new Campo();
   boolean primeiroClick = true;
 
   int tempo = 0;
@@ -163,30 +163,24 @@ class Servindo extends Thread {
    1-8 - quantidade de bombas ao redor da casa
   */
 
-  int[][] mCampo = { 
-    {naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado},
-    {naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado},
-    {naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado},
-    {naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado},
-    {naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado},
-    {naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado},
-    {naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado},
-    {naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado},
-    {naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado},
-    {naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado,naoUsado}
-  };
+  Campo[][] mCampo = null;
+
+  
 
   void criarCampo (int x, int y) {
-    boolean campoMarcado = false;
+    if (mCampo != null) {
+      System.out.println("Campo já criado!");
+      return;
+    }
+
+    mCampo = new Campo[10][10];
 
     for (int i = 0; i < 10; i++) {
       for (int j = 0; j < 10; j++) {
-        if (mCampo[i][j] != naoUsado) {
-          System.out.println("O Criar Campo foi chamado com o campo em uso!");
-          return;
-        }
+        mCampo[i][j] = new Campo(naoUsado, false); 
       }
     }
+
     int xb, yb;
     System.out.println("\n\n\n########### Criar Campo ("+x+", "+y+") ###############");
     for (int i = 0; i < 13; i++) {
@@ -199,38 +193,42 @@ class Servindo extends Thread {
         i--;
         System.out.print("\t");
       } else {
-        mCampo[xb][yb] = -1;
+        mCampo[xb][yb].setValor(-1);
       }
     }
     imprimirCampo();
   }
   
   int pesquisarPorBombas (int x, int y, int id) {
-    if (x < 0 || x > 9 || y < 0 || y > 9) {
+    if (x < 0 || x > 9 || y < 0 || y > 9) { // Testo se a posição passada é válida
       return -200;
     }
     /* ordem de busca: casa, topo, topo/direita, direita, baixo/direita, baixo, baixo/esquerda, esquerda, topo/esquerda */
 
     int numeroCasa = 0;
     System.out.println("\n\n\n########### Pesquisar por bombas ("+x+", "+y+") ###############");
-    if (mCampo[x][y] != naoUsado) {
-      if (mCampo[x][y] == -1 && id != -1) {
-        enviar("P:"+x+"_"+y+"_"+-1+"_"+id);
-        fimJogo(id, true);
-      }
-      return mCampo[x][y];
+    if (mCampo[x][y].getExibido()) { // Caso essa casa já tenha sido exibida para o usuário e por tando calculada
+      return mCampo[x][y].getValor();
     }
 
-    for (int i = -1; i < 2; i++) {
+    if (mCampo[x][y].getValor() == -1 && id != -1) { // Caso um dos jogadores tenha abrido uma bomba
+      enviar("P:"+x+"_"+y+"_"+-1+"_"+id);
+      fimJogo(id, true);
+    }
+
+      // Ia colocar alguma coisa aqui só não lembro o que e se o bloco de cima já resolve o problema...
+
+    for (int i = -1; i < 2; i++) { // Calcula o numero da casa (quantidade de bombas perimetro de uma casa a partir dela)
       for (int j = -1; j < 2; j++) {
         if ( !((x+i < 0) || (x+i >= 10) || (y+j) < 0 || (y+j >= 10)) ){ // Testa se a posição que vai ser checada na matriz é valida.
-          if (mCampo[x+i][y+j] == -1) {
+          if (mCampo[x+i][y+j].getValor() == -1) { // Testa se é uma bomba para incrementar no contador numeroCasa
             numeroCasa++;
           }
         }
       }
     }
-    mCampo[x][y] = numeroCasa;
+    mCampo[x][y].setValor(numeroCasa);
+    mCampo[x][y].setExibido(true);
     enviar("P:"+x+"_"+y+"_"+numeroCasa+"_"+id);
 
     System.out.print("mCampo["+x+"]["+y+"] = "+numeroCasa+"\n");
@@ -240,7 +238,7 @@ class Servindo extends Thread {
         for (int j = -1; j < 2; j++) {
           if ( !((x+i < 0) || (x+i >= 10) || (y+j) < 0 || (y+j >= 10)) ){ // Testa se a posição que vai ser checada na matriz é valida.
             
-            if (mCampo[x+i][y+j] == naoUsado) {
+            if (mCampo[x+i][y+j].getValor() == naoUsado && mCampo[x+i][y+j].getMarcadoPor() == -1) {
               pesquisarPorBombas(x+i, y+j, -1);
             }
           }
@@ -251,16 +249,27 @@ class Servindo extends Thread {
   }
 
   void marcarFlag (int x, int y, int id) {
+    if(mCampo[x][y].getExibido()) {
+      return;
+    }
+
     System.out.println("Marcar Flag -> ID: "+id);
     if (-1 < id && id <= cont) {
+      if (mCampo[x][y].getMarcadoPor() != -1) {
+        return;
+      }
+
       enviar("P:"+x+"_"+y+"_-2_"+id);
+      mCampo[x][y].setMarcadoPor(id);
+
       
-      if (mCampo[x][y] == -1) {
+      if (mCampo[x][y].getValor() == -1) {
         clientes[id].incrementBombasAchadas();
       } else {
         clientes[id].incrementBombasErradas();
       }
     }
+    checarSeMCampoEstaCheio();
   }
 
   void imprimirCampo () {
@@ -273,6 +282,22 @@ class Servindo extends Thread {
       System.out.print("\n");
     }
     System.out.print("\n\n");
+  }
+
+  void checarSeMCampoEstaCheio () {
+    int usados = 0;
+
+    for (int i = 0; i < 10; i++) {
+      for (int j = 0; j < 10; j++) {
+        if (mCampo[i][j].getExibido()) {
+          usados++;
+        }
+      }
+    }
+
+    if (usados >= 100) {
+      fimJogo(-1, false);
+    }
   }
 
   void fimJogo(int id, boolean bomba) {
