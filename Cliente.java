@@ -5,7 +5,7 @@ import java.util.*;
 public class Cliente extends Thread {
   static PrintStream os = null;
   static boolean paraThread = false;
-  String ip = "107.0.0.1";
+  String ip = "127.0.0.1";
   int id = 0;
   DadosJogo me;
   int tamanho[] = {10, 10}; // x, 
@@ -25,6 +25,7 @@ public class Cliente extends Thread {
 
     try { // Inicia Conexao
       me.socket = new Socket(ip, 80);
+      System.out.println("Conexao com o Servidor -> IP: "+ip);
       me.os = new PrintStream(me.socket.getOutputStream(), true);
       me.is = new Scanner(me.socket.getInputStream());
     } catch (UnknownHostException e) {

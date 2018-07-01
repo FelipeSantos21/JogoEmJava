@@ -9,7 +9,7 @@ import java.lang.*;
 
 public class Manager {
     JFrame telaInicial;
-    String strIp = "107.0.0.1";
+    String strIp = "";
 
     public static void main (String[] args) {
         System.out.println("Iniciado!");
@@ -47,10 +47,11 @@ public class Manager {
     public void iniciaJogo (boolean novaSala) {
         Servidor serv = null;
         Cliente cli = null;
-
+        System.out.println("IniciaJogo -> novaSala: "+novaSala);
         if (novaSala) {
              serv = new Servidor();
              serv.start();
+
              cli = new Cliente(this);
 
         }  else { // Entra em uma sala existente.            

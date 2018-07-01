@@ -7,5 +7,4 @@ javac Cliente.java
 javac Jogo.java
 javac Servidor.java
 javac Manager.java
-start java Manager
 java Manager
