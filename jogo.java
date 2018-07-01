@@ -58,17 +58,17 @@ class Jogo extends JFrame {
                         if (btn.getMyEnable()) {
                             switch (e.getButton()) {
                                 case 1: // Left button
-                                    System.out.print("Left (<-) ");
+                                    //System.out.print("Left (<-) ");
                                     cliente.send(btn.x, btn.y, -1);
                                     break;
 
                                 case 3: // Right button
-                                    System.out.print("Right (->) ");
+                                    //System.out.print("Right (->) ");
                                     cliente.send(btn.x, btn.y, -2);
                                     break;
 
                                 default:
-                                    System.out.println(e.getButton());
+                                    //System.out.println(e.getButton());
                                     break;
                             }
                         }
@@ -139,7 +139,7 @@ class Jogo extends JFrame {
     }
 
     public void inicia (boolean destrava) {
-        System.out.println("Jogo -> Inicia Jogo: "+destrava);
+        //System.out.println("Jogo -> Inicia Jogo: "+destrava);
         for (int i = 0; i < x; i++) {
             for (int j = 0; j < y; j++) {
                 casas[i][j].setEnabled(destrava);

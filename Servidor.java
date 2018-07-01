@@ -25,7 +25,7 @@ class Servidor extends Thread{
         System.exit(1);
       }
 
-      System.out.println("Accept Funcionou!");
+      //System.out.println("Accept Funcionou!");
 
       new Servindo(clientSocket).start();
 
@@ -86,7 +86,7 @@ class Servindo extends Thread {
         cont--;
       } else {
         clientes[cont] = new DadosJogo(); //(cont, new PrintStream(clientSocket.getOutputStream()));
-        System.out.println("cont: "+cont);
+        //System.out.println("cont: "+cont);
         clientes[cont].setId(cont);
         clientes[cont].os = new PrintStream(clientSocket.getOutputStream());
       
@@ -111,7 +111,7 @@ class Servindo extends Thread {
             break;
             
           default:
-            System.out.println("Server recebeu comando nao estendido: "+inputLine);
+            //System.out.println("Server recebeu comando nao estendido: "+inputLine);
             break;
         }
       } while (!inputLine.equals(""));
@@ -157,7 +157,7 @@ class Servindo extends Thread {
       clientes[i].os.println(msg);
       clientes[i].os.flush();
     }
-    System.out.print(msg+'\n');
+    System.out.println("Server -> enviar(): "+msg);
   }
 
   
@@ -193,16 +193,16 @@ class Servindo extends Thread {
     }
 
     int xb, yb;
-    System.out.println("\n\n\n########### Criar Campo ("+x+", "+y+") ###############");
+    //System.out.println("\n\n\n########### Criar Campo ("+x+", "+y+") ###############");
     for (int i = 0; i < 13; i++) {
       Random r = new Random();
       xb = r.nextInt(10);
       yb = r.nextInt(10);
-      System.out.println("["+i+"]  Xb: "+xb+" Yb: "+yb);
+      //System.out.println("["+i+"]  Xb: "+xb+" Yb: "+yb);
       
       if (( y-1 <= yb && yb <= y+1) && ( x-1 <= xb && xb <= x+1)) {
         i--;
-        System.out.print("\t");
+        //System.out.print("\t");
       } else {
         mCampo[xb][yb].setValor(-1);
       }
@@ -217,14 +217,14 @@ class Servindo extends Thread {
     /* ordem de busca: casa, topo, topo/direita, direita, baixo/direita, baixo, baixo/esquerda, esquerda, topo/esquerda */
 
     int numeroCasa = 0;
-    System.out.println("\n\n\n########### Pesquisar por bombas ("+x+", "+y+") ###############");
+    //System.out.println("\n########### Pesquisar por bombas ("+x+", "+y+") ###############");
     if (mCampo[x][y].getExibido()) { // Caso essa casa já tenha sido exibida para o usuário e por tando calculada
       return mCampo[x][y].getValor();
     }
 
     if (mCampo[x][y].getValor() == -1) { // Caso tenha abrido uma bomba
       if (id == -1) { // Caso o servidor tenha chamado
-        enviar("P:"+x+"_"+y+"_-1_-1");
+        //enviar("P:"+x+"_"+y+"_-1_-1");
         return -1;
 
       } else { // Caso um dos jogadores tenha chamado
@@ -249,20 +249,21 @@ class Servindo extends Thread {
     mCampo[x][y].setExibido(true);
     enviar("P:"+x+"_"+y+"_"+numeroCasa+"_"+id);
 
-    System.out.print("mCampo["+x+"]["+y+"] = "+numeroCasa+"\n");
+    //System.out.print("mCampo["+x+"]["+y+"] = "+numeroCasa+"\n");
     if (numeroCasa == 0) {
       for (int i = -1; i < 2; i++) {
         
         for (int j = -1; j < 2; j++) {
           if ( !((x+i < 0) || (x+i >= 10) || (y+j) < 0 || (y+j >= 10) || (i==0 && j==0)) ){ // Testa se a posição que vai ser checada na matriz é valida.
             
-            if (mCampo[x+i][y+j].getValor() == naoUsado){//} && mCampo[x+i][y+j].getMarcadoPor() == -1) {
+            if (mCampo[x+i][y+j].getValor() == naoUsado && mCampo[x+i][y+j].getMarcadoPor() == -1) {
               pesquisarPorBombas(x+i, y+j, -1);
             }
           }
         }
       }
     }
+    checarSeMCampoEstaCheio();
     return numeroCasa;
   }
 
@@ -271,7 +272,7 @@ class Servindo extends Thread {
       return;
     }
 
-    System.out.println("Marcar Flag -> ID: "+id);
+    //System.out.println("Marcar Flag -> ID: "+id);
     if (-1 < id && id <= cont) {
       if (mCampo[x][y].getMarcadoPor() != -1) {
         return;
@@ -295,7 +296,11 @@ class Servindo extends Thread {
     System.out.print("\n\n");
     for (int i = 0; i < 10; i++) {
       for (int j = 0; j < 10; j++) {
-        System.out.print("|"+mCampo[i][j].getValor()+"| ");
+        if (mCampo[i][j].getValor() < 0) {
+          System.out.print("|"+mCampo[i][j].getValor()+"| ");
+        } else {
+          System.out.print("| "+mCampo[i][j].getValor()+"| ");
+        }
         if (enviar) {
           enviar("P:"+i+"_"+j+"_"+mCampo[i][j].getValor()+"_"+id);
         }
@@ -316,13 +321,15 @@ class Servindo extends Thread {
       }
     }
 
+    //System.out.println("\n\n\n\n\nCampos Usados: "+usados);
+    //imprimirCampo(false);
     if (usados >= 100) {
       fimJogo(-1, false);
     }
   }
 
   void fimJogo(int id, boolean bomba) {
-    timer.cancel(); //Finalizar a thread do timer
+    //timer.cancel(); //Finalizar a thread do timer
     imprimirCampo(true);
     if (!bomba) { // Caso tenha acabado por tempo ou por ter acabado o campo
       if (clientes[0].getBombasAchadas() == clientes[1].getBombasAchadas()) { // Caso a primeira concição dê empate

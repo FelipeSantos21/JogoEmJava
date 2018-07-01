@@ -41,21 +41,24 @@ public class Cliente extends Thread {
       String retorno;
 
       // Recebe os dados iniciais
-      System.out.println(inputLine=me.is.nextLine());
+      inputLine=me.is.nextLine();
+      //System.out.println(inputLine);
       this.id = Integer.parseInt(inputLine);
-      System.out.println("This.id == " + this.id);
+      //System.out.println("This.id == " + this.id);
 
       jogo = new Jogo (10,10, this, manager); // Inicia o jogo e passa a instancia desse cliente para ele.
 
       do { // Espera pelo inicio do jogo.
-        System.out.println(inputLine=me.is.nextLine());
+        inputLine=me.is.nextLine();
+        //System.out.println(inputLine);
       } while (!inputLine.equals("I"));
       System.out.println("Client -> Inicia Jogo");
       jogo.inicia(true);
       
       // Inicio do Jogo, passa a esperar receber os valores e coordenadas das casas
       do {
-        System.out.println("Client::  "+ (inputLine=me.is.nextLine())); // Recebe os dados emitidos pelo servidor
+        inputLine=me.is.nextLine();
+        //System.out.println("Client::  "+ inputLine); // Recebe os dados emitidos pelo servidor
         valores = inputLine.split(":");
 
         switch (valores[0]) {
@@ -76,7 +79,7 @@ public class Cliente extends Thread {
             break;  
             
           default:
-            System.out.println("Comando nao reconhecido: "+inputLine);
+            //System.out.println("Comando nao reconhecido: "+inputLine);
             break;
         }
       } while (!inputLine.equals (""));
@@ -99,7 +102,6 @@ public class Cliente extends Thread {
       1 - % Tempo
     */
     valores = msg.split("_"); // Divide a String em um array pelo "_"
-    
     jogo.setTime(Integer.parseInt(valores[0]), Integer.parseInt(valores[1]));
   }
 
