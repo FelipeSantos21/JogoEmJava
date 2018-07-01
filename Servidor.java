@@ -48,6 +48,7 @@ class Servindo extends Thread {
   public static int cont=-1;
   public static boolean enviarDisponivel = false;
   public static Campo[][] mCampo = null;
+  public static Timer timer = null;
   String valores[];
   int x;
   int y;
@@ -59,7 +60,6 @@ class Servindo extends Thread {
   int tempo = 0;
   final int tempoMax = 600000; // Em milisegundos
   final int tempoPasso = 500; // Em milisegundos
-  Timer timer;
 
   Servindo(Socket clientSocket) {
     this.clientSocket = clientSocket;
@@ -96,7 +96,7 @@ class Servindo extends Thread {
         if (cont == 1) {
           enviar("I"); // Envia o comando para iniciar o jogo.
           System.out.println("Server -> Iniciar Jogo");
-          timer = new Timer(true);
+          timer = new Timer();
           timer.schedule(new tempoJogo(), tempoPasso, tempoPasso); // Para executar mais de uma vez
         }
       }
@@ -326,7 +326,11 @@ class Servindo extends Thread {
   }
 
   void fimJogo(int id, boolean bomba) {
-    //timer.cancel(); //Finalizar a thread do timer
+    if (timer != null) {
+      timer.cancel(); //Finalizar a thread do timer
+      //System.out.println("Server -> timer Finalizado");
+    }
+
     imprimirCampo(true);
     if (!bomba) { // Caso tenha acabado por tempo ou por ter acabado o campo
       if (clientes[0].getBombasAchadas() == clientes[1].getBombasAchadas()) { // Caso a primeira concição dê empate
