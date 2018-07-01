@@ -47,12 +47,12 @@ class Jogo extends JFrame {
             for (int j = 0; j < y; j++) {
                 Casa btn = new Casa (i, j, false);
                 btn.addMouseListener(new MouseListener(){
-                
+
                     @Override
                     public void mouseReleased(MouseEvent e) {
-                        
+
                     }
-                
+
                     @Override
                     public void mousePressed(MouseEvent e) {
                         if (btn.getMyEnable()) {
@@ -73,20 +73,20 @@ class Jogo extends JFrame {
                             }
                         }
                     }
-                
+
                     @Override
                     public void mouseExited(MouseEvent e) {
-                        
+
                     }
-                
+
                     @Override
                     public void mouseEntered(MouseEvent e) {
-                        
+
                     }
-                
+
                     @Override
                     public void mouseClicked(MouseEvent e) {
-                        
+
                     }
                 });
                 btn.setMyEnable(false);
@@ -120,7 +120,7 @@ class Jogo extends JFrame {
 
         switch (flag) {
             case -1: // Bomba
-                casas[x][y].setText("\uD83D\uDCA3");
+                casas[x][y].setText("X"); //  "\uD83D\uDCA3");
                 break;
 
             case -2: // Marcação
@@ -150,7 +150,7 @@ class Jogo extends JFrame {
 
     public void setTime(int tempo, int porcentagem) {
         // Ambos em milisegundos
-        
+
         tempoN.setText("Tempo: "+tempo+" segundos ");
         tempoP.setValue(porcentagem);
     }
@@ -206,4 +206,3 @@ class Jogo extends JFrame {
         fimDeJogo.setVisible(true);
     }
 }
- 

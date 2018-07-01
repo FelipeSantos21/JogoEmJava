@@ -41,17 +41,18 @@ class Servidor extends Thread{
 
 
 class Servindo extends Thread {
-  
+
   final int naoUsado = -5;
   Socket clientSocket;
   public static DadosJogo clientes[] = new DadosJogo[2];
   public static int cont=-1;
   public static boolean enviarDisponivel = false;
+  public static Campo[][] mCampo = null;
   String valores[];
   int x;
   int y;
   int flag;
-  int id;  
+  int id;
   //Campo campo = new Campo();
   boolean primeiroClick = true;
 
@@ -89,7 +90,7 @@ class Servindo extends Thread {
         //System.out.println("cont: "+cont);
         clientes[cont].setId(cont);
         clientes[cont].os = new PrintStream(clientSocket.getOutputStream());
-      
+
         clientes[cont].os.println(cont); // Envia o id para o novo cliente
         clientes[cont].os.flush();
         if (cont == 1) {
@@ -109,7 +110,7 @@ class Servindo extends Thread {
           case "P":
             p(inputLine.split(":")[1]);
             break;
-            
+
           default:
             //System.out.println("Server recebeu comando nao estendido: "+inputLine);
             break;
@@ -135,7 +136,7 @@ class Servindo extends Thread {
     y = Integer.parseInt(valores[1]);
     flag = Integer.parseInt(valores[2]);
     id = Integer.parseInt(valores[3]);
-    
+
     if (primeiroClick) {
       criarCampo(x, y);
       primeiroClick = false;
@@ -160,22 +161,18 @@ class Servindo extends Thread {
     System.out.println("Server -> enviar(): "+msg);
   }
 
-  
+
   /*
    * Flag - Recebido do Cliente:
    -1 - descobrir
    -2 - marcar
-   
+
    * Flag - Retorno para o Cliente:
    -2 - marcado
    -1 - bomba
    0 - casa vazia
    1-8 - quantidade de bombas ao redor da casa
   */
-
-  Campo[][] mCampo = null;
-
-  
 
   void criarCampo (int x, int y) {
     if (mCampo != null) {
@@ -187,7 +184,7 @@ class Servindo extends Thread {
 
     for (int i = 0; i < 10; i++) {
       for (int j = 0; j < 10; j++) {
-        mCampo[i][j] = new Campo(naoUsado, false); 
+        mCampo[i][j] = new Campo(naoUsado, false);
         enviar("P:"+x+"_"+y+"_-5_-1");
       }
     }
@@ -199,7 +196,7 @@ class Servindo extends Thread {
       xb = r.nextInt(10);
       yb = r.nextInt(10);
       //System.out.println("["+i+"]  Xb: "+xb+" Yb: "+yb);
-      
+
       if (( y-1 <= yb && yb <= y+1) && ( x-1 <= xb && xb <= x+1)) {
         i--;
         //System.out.print("\t");
@@ -209,7 +206,7 @@ class Servindo extends Thread {
     }
     imprimirCampo(false);
   }
-  
+
   int pesquisarPorBombas (int x, int y, int id) {
     if (x < 0 || x > 9 || y < 0 || y > 9) { // Testo se a posição passada é válida
       return -200;
@@ -252,10 +249,10 @@ class Servindo extends Thread {
     //System.out.print("mCampo["+x+"]["+y+"] = "+numeroCasa+"\n");
     if (numeroCasa == 0) {
       for (int i = -1; i < 2; i++) {
-        
+
         for (int j = -1; j < 2; j++) {
           if ( !((x+i < 0) || (x+i >= 10) || (y+j) < 0 || (y+j >= 10) || (i==0 && j==0)) ){ // Testa se a posição que vai ser checada na matriz é valida.
-            
+
             if (mCampo[x+i][y+j].getValor() == naoUsado && mCampo[x+i][y+j].getMarcadoPor() == -1) {
               pesquisarPorBombas(x+i, y+j, -1);
             }
@@ -281,7 +278,7 @@ class Servindo extends Thread {
       enviar("P:"+x+"_"+y+"_-2_"+id);
       mCampo[x][y].setMarcadoPor(id);
 
-      
+
       if (mCampo[x][y].getValor() == -1) {
         clientes[id].incrementBombasAchadas();
       } else {
@@ -292,7 +289,7 @@ class Servindo extends Thread {
   }
 
   void imprimirCampo (boolean enviar) {
-    
+
     System.out.print("\n\n");
     for (int i = 0; i < 10; i++) {
       for (int j = 0; j < 10; j++) {
@@ -352,7 +349,7 @@ class Servindo extends Thread {
           id = 0;
         }
       }
-    }  
+    }
 
     if (id == 1) { // o id representa o perdedor
       enviar ("F:"+0+"_" + clientes[0].getBombasAchadas()+"_" + clientes[0].getBombasErradas()+"_"+ clientes[1].getBombasAchadas()+"_" + clientes[1].getBombasErradas());
