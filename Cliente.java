@@ -24,7 +24,7 @@ public class Cliente extends Thread {
     me = new DadosJogo();
 
     try { // Inicia Conexao
-      me.socket = new Socket("127.0.0.1", 80);
+      me.socket = new Socket(ip, 80);
       me.os = new PrintStream(me.socket.getOutputStream(), true);
       me.is = new Scanner(me.socket.getInputStream());
     } catch (UnknownHostException e) {
