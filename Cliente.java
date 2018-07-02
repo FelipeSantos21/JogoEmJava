@@ -53,7 +53,7 @@ public class Cliente extends Thread {
         inputLine=me.is.nextLine();
         //System.out.println(inputLine);
       } while (!inputLine.equals("I"));
-      System.out.println("Client -> Inicia Jogo");
+      //System.out.println("Client -> Inicia Jogo");
       jogo.inicia(true);
       
       // Inicio do Jogo, passa a esperar receber os valores e coordenadas das casas

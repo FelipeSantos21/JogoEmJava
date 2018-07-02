@@ -58,7 +58,7 @@ class Servindo extends Thread {
   boolean primeiroClick = true;
 
   static int tempo = 0;
-  final int tempoMax = 10000;// 600000; // Em milisegundos
+  final int tempoMax = 600000; // Em milisegundos
   final int tempoPasso = 500; // Em milisegundos
 
   Servindo(Socket clientSocket) {
@@ -96,7 +96,7 @@ class Servindo extends Thread {
         clientes[cont].os.flush();
         if (cont == 1) {
           enviar("I"); // Envia o comando para iniciar o jogo.
-          System.out.println("Server -> Iniciar Jogo");
+          //System.out.println("Server -> Iniciar Jogo");
           timer = new Timer();
           timer.schedule(new tempoJogo(), tempoPasso, tempoPasso); // Para executar mais de uma vez
         }
@@ -159,7 +159,7 @@ class Servindo extends Thread {
       clientes[i].os.println(msg);
       clientes[i].os.flush();
     }
-    System.out.println("Server -> enviar(): "+msg);
+    //  System.out.println("Server -> enviar(): "+msg);
   }
 
 

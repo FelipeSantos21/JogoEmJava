@@ -14,8 +14,8 @@ class Jogo extends JFrame {
 
     Jogo (int x, int y, Cliente cliente, Manager manager) {
         super("Trabalho");
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         this.x = x;
         this.y = y;
@@ -89,13 +89,8 @@ class Jogo extends JFrame {
         }
         add(tabela, BorderLayout.CENTER);
         setSize(500, 500);
-        //pack(); // Chama o public Dimension getPreferredSize() para saber o tamanho preferido
         setVisible(true);
     }
-
-    /*public Dimension getPreferredSize() {
-        return new Dimension(1000, 600); // Tamanho preferido (Tamanho que vai abrir por padrão)
-    }*/
 
     public void receberPosicao (int x, int y, int flag, int id) {
         casas[x][y].setMyEnable(false); // Impede que o jogador mande algum comando via clique para o botão
@@ -174,7 +169,7 @@ class Jogo extends JFrame {
         resultado.add(new JLabel("Bombas Acertadas"));
 
         if (vcVenceu){
-            resultado.add(new JLabel("Você venceu!"));
+            resultado.add(new JLabel("Voce venceu!"));
         } else {
             resultado.add(new JLabel("Oponente venceu!"));
         }
@@ -183,7 +178,7 @@ class Jogo extends JFrame {
         if (vcVenceu){
             resultado.add(new JLabel("Oponente perdeu!"));
         } else {
-            resultado.add(new JLabel("Você perdeu!"));
+            resultado.add(new JLabel("Voce perdeu!"));
         }
         resultado.add(new JLabel(bombasAchadasPerdedor+""));
 

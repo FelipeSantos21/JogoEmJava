@@ -2,9 +2,10 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.*;
 import javax.swing.*;
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 
 import java.io.*;
-import javax.imageio.*;
 import java.lang.*;
 
 
@@ -22,9 +23,9 @@ public class Manager {
     }
 
     public void comeca () {
-        telaInicial = new JFrame();
+        JFrame telaInicial = new JFrame("Tela Inicial");
+        telaInicial.setLayout(new BorderLayout());
         //telaInicial.setDefaultCloseOperation(EXIT_ON_CLOSE);
-        telaInicial.setTitle("Tela Inicial");
         telaInicial.add(new JLabel("Escolha entre inicar uma sala e entrar em uma sala"), BorderLayout.NORTH);
         
         JButton btnNovaSala = new JButton("Nova Sala");
@@ -77,7 +78,6 @@ public class Manager {
         } 
         
         cli.start(); // Inicia com o ip do localhost
-        telaInicial.setVisible(false);
     }
 
     void getIp () {
