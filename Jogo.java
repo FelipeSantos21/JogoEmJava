@@ -1,16 +1,8 @@
-/*
-BufferedImage myPicture = ImageIO.read(new File("path-to-file"));
-JLabel picLabel = new JLabel(new ImageIcon(myPicture));
-add(picLabel);
-*/
-
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.*;
 import javax.swing.*;
 import javax.swing.SwingUtilities;
-import java.io.*;
-import javax.imageio.*;
 
 class Jogo extends JFrame {
 	Cliente c;
@@ -155,17 +147,15 @@ class Jogo extends JFrame {
         tempoP.setValue(porcentagem);
     }
 
-    public void empate (int bombasAchadas, int bombasErradas) {
+    public void empate (int bombasAchadas) {
         inicia(false);
         JFrame fimDeJogo = new JFrame("Resultado");
         fimDeJogo.setLayout(new BorderLayout());
         fimDeJogo.setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-        JPanel resultado = new JPanel (new GridLayout(2, 2));
+        JPanel resultado = new JPanel (new GridLayout(1, 2));
         resultado.add(new JLabel("Bombas Acertadas"));
-        resultado.add(new JLabel("Bombas Erradas"));
         resultado.add(new JLabel(bombasAchadas+""));
-        resultado.add(new JLabel(bombasErradas+""));
 
         fimDeJogo.add(new JLabel("EMPATE!"), BorderLayout.NORTH);
         fimDeJogo.add(resultado, BorderLayout.CENTER);

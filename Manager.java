@@ -145,8 +145,4 @@ public class Manager {
         telaIp.pack();
         telaIp.setVisible(true);
     }
-
-    public void exit () {
-        System.exit(1);
-    }
 }

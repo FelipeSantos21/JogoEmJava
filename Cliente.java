@@ -30,10 +30,10 @@ public class Cliente extends Thread {
       me.is = new Scanner(me.socket.getInputStream());
     } catch (UnknownHostException e) {
       System.err.println("Don't know about host.");
-      manager.exit();
+      System.exit(0);
     } catch (IOException e) {
       System.err.println("Couldn't get I/O for the connection to host");
-      manager.exit();
+      System.exit(0);
     }
     
     
@@ -122,10 +122,8 @@ public class Cliente extends Thread {
   void d (String msg) {
     /*
       0 - Bombas Marcadas
-      1 - Bombas Erradas
     */
-    valores = msg.split("_"); // Divide a String em um array pelo "_"
-    jogo.empate(Integer.parseInt(valores[0]), Integer.parseInt(valores[1]));
+    jogo.empate(Integer.parseInt(msg));
   }
 
   // Função para mandar o fim de jogo para o jogo

@@ -57,8 +57,8 @@ class Servindo extends Thread {
   //Campo campo = new Campo();
   boolean primeiroClick = true;
 
-  int tempo = 0;
-  final int tempoMax = 600000; // Em milisegundos
+  static int tempo = 0;
+  final int tempoMax = 10000;// 600000; // Em milisegundos
   final int tempoPasso = 500; // Em milisegundos
 
   Servindo(Socket clientSocket) {
@@ -72,9 +72,10 @@ class Servindo extends Thread {
         if (tempo > tempoMax) {
           fimJogo(0, false);
           return;
+        } else {
+          enviar("T:"+((tempoMax - tempo)/1000)+"_"+(tempo*100/tempoMax));
         }
 
-        enviar("T:"+((tempoMax - tempo)/1000)+"_"+(tempo*100/tempoMax));
     }
   }
 
@@ -185,7 +186,7 @@ class Servindo extends Thread {
     for (int i = 0; i < 10; i++) {
       for (int j = 0; j < 10; j++) {
         mCampo[i][j] = new Campo(naoUsado, false);
-        enviar("P:"+x+"_"+y+"_-5_-1");
+        //enviar("P:"+x+"_"+y+"_-5_-1");
       }
     }
 
@@ -230,8 +231,6 @@ class Servindo extends Thread {
         return -1;
       }
     }
-
-      // Ia colocar alguma coisa aqui só não lembro o que e se o bloco de cima já resolve o problema...
 
     for (int i = -1; i < 2; i++) { // Calcula o numero da casa (quantidade de bombas perimetro de uma casa a partir dela)
       for (int j = -1; j < 2; j++) {
@@ -329,24 +328,16 @@ class Servindo extends Thread {
     if (timer != null) {
       timer.cancel(); //Finalizar a thread do timer
       //System.out.println("Server -> timer Finalizado");
-    }
+    } 
+
 
     imprimirCampo(true);
     if (!bomba) { // Caso tenha acabado por tempo ou por ter acabado o campo
-      if (clientes[0].getBombasAchadas() == clientes[1].getBombasAchadas()) { // Caso a primeira concição dê empate
-        if  (clientes[0].getBombasErradas() == clientes[1].getBombasErradas()) { // Caso a segunda concição dê empate
-          enviar ("D:"+clientes[0].getBombasAchadas()+"_" + clientes[0].getBombasErradas());
+      if (clientes[0].getBombasAchadas() == clientes[1].getBombasAchadas()) { // Caso a concição dê empate
+          enviar ("D:"+clientes[0].getBombasAchadas());
           return;
 
-        } else { // Caso a segunda condição consiga desempatar
-          if (clientes[0].getBombasErradas() > clientes[1].getBombasErradas()) {  // Caso o primeiro jogador seja o vencedor
-            id = 1;
-          } else {  // Caso o segundo jogador seja o vencedor
-            id = 0;
-          }
-        }
-
-      } else { // Caso a primeira condição seja o suficiente para decidir o ganhador
+      } else { // Caso a condição seja o suficiente para decidir o ganhador
         if (clientes[0].getBombasAchadas() > clientes[1].getBombasAchadas()) {
           id = 1;
         } else {
