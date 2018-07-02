@@ -7,6 +7,10 @@ import java.io.*;
 import javax.imageio.*;
 import java.lang.*;
 
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 public class Manager {
     JFrame telaInicial;
     String strIp = "";
@@ -44,15 +48,27 @@ public class Manager {
         System.out.println("Tela iniciada!");
     }
 
+    
+    private void mostrarIp () {
+        InetAddress address = null;
+        try {
+            address = InetAddress.getLocalHost();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+
+        JOptionPane.showMessageDialog(null, "O ip da sala e: " + address.getHostAddress());
+    }
+
     public void iniciaJogo (boolean novaSala) {
         Servidor serv = null;
         Cliente cli = null;
         System.out.println("IniciaJogo -> novaSala: "+novaSala);
         if (novaSala) {
-             serv = new Servidor();
-             serv.start();
-
-             cli = new Cliente(this);
+            serv = new Servidor();
+            serv.start();
+            mostrarIp();
+            cli = new Cliente(this);
 
         }  else { // Entra em uma sala existente.            
             System.out.println("IP: "+strIp);
