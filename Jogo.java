@@ -173,7 +173,7 @@ class Jogo extends JFrame {
         fimDeJogo.setVisible(true);
     }
 
-    public void fimJogo (boolean vcVenceu, int bombasAchadasVencedor, int bombasErradasVencedor, int bombasAchadasPerdedor, int bombasErradasPerdedor) {
+    public void fimJogo (boolean vcVenceu, int bombasAchadasVencedor, int bombasAchadasPerdedor) {
         inicia(false);
         JFrame fimDeJogo = new JFrame("Resultado");
         fimDeJogo.setLayout(new BorderLayout());
@@ -182,7 +182,6 @@ class Jogo extends JFrame {
         JPanel resultado = new JPanel (new GridLayout(3, 2));
         resultado.add(new JLabel(""));
         resultado.add(new JLabel("Bombas Acertadas"));
-        resultado.add(new JLabel("Bombas Erradas"));
 
         if (vcVenceu){
             resultado.add(new JLabel("Você venceu!"));
@@ -190,7 +189,6 @@ class Jogo extends JFrame {
             resultado.add(new JLabel("Oponente venceu!"));
         }
         resultado.add(new JLabel(bombasAchadasVencedor+""));
-        resultado.add(new JLabel(bombasErradasVencedor+""));
 
         if (vcVenceu){
             resultado.add(new JLabel("Oponente perdeu!"));
@@ -198,7 +196,6 @@ class Jogo extends JFrame {
             resultado.add(new JLabel("Você perdeu!"));
         }
         resultado.add(new JLabel(bombasAchadasPerdedor+""));
-        resultado.add(new JLabel(bombasErradasPerdedor+""));
 
         fimDeJogo.add(new JLabel("Resultado do Jogo:"), BorderLayout.NORTH);
         fimDeJogo.add(resultado, BorderLayout.CENTER);

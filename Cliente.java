@@ -133,12 +133,10 @@ public class Cliente extends Thread {
     /* 
       0 - idVencedor
       1 - Bombas Achadas Vencedor
-      2 - Bombas Erradas Vencedor
-      3 - Bombas Achadas Perdedor
-      4 - Bombas Erradas Perdedor
+      2 - Bombas Achadas Perdedor
     */
     valores = msg.split("_");
-    jogo.fimJogo ((Integer.parseInt(valores[0]) == id), Integer.parseInt(valores[1]), Integer.parseInt(valores[2]), Integer.parseInt(valores[3]), Integer.parseInt(valores[4]));
+    jogo.fimJogo ((Integer.parseInt(valores[0]) == id), Integer.parseInt(valores[1]), Integer.parseInt(valores[2]));
   }
 
   public void send(int x, int y, int flag) {

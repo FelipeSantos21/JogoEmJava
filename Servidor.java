@@ -281,8 +281,8 @@ class Servindo extends Thread {
 
       if (mCampo[x][y].getValor() == -1) {
         clientes[id].incrementBombasAchadas();
-      } else {
-        clientes[id].incrementBombasErradas();
+      } else { // Caso marque onde não tem bomba
+        fimJogo(id, true);
       }
     }
     checarSeMCampoEstaCheio();
@@ -356,9 +356,9 @@ class Servindo extends Thread {
     }
 
     if (id == 1) { // o id representa o perdedor
-      enviar ("F:"+0+"_" + clientes[0].getBombasAchadas()+"_" + clientes[0].getBombasErradas()+"_"+ clientes[1].getBombasAchadas()+"_" + clientes[1].getBombasErradas());
+      enviar ("F:"+0+"_" + clientes[0].getBombasAchadas()+"_"+ clientes[1].getBombasAchadas());
     } else {
-      enviar ("F:"+1+"_" + clientes[1].getBombasAchadas()+"_" + clientes[1].getBombasErradas()+"_"+ clientes[0].getBombasAchadas()+"_" + clientes[0].getBombasErradas());
+      enviar ("F:"+1+"_" + clientes[1].getBombasAchadas()+"_"+ clientes[0].getBombasAchadas());
     }
   }
 };

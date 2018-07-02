@@ -89,7 +89,7 @@ public class Manager {
         JPanel campoIp = new JPanel(new GridLayout(1, 4));
 
         JPanel campo = new JPanel(new BorderLayout());
-        ip[0] = new JTextField("107", 3);
+        ip[0] = new JTextField("127", 3);
         campo.add(ip[0], BorderLayout.CENTER);
         campo.add(new JLabel("."), BorderLayout.EAST);
         campoIp.add(campo);
